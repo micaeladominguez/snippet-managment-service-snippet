@@ -1,1 +1,0 @@
-# snippet-managment-service-snippet

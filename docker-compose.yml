@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  api:
+    container_name: "snippet-managment-api"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8080
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: snippet-managment-db
+      DB_HOST: snippet_service
+      DB_PORT: 5432
+
+  db:
+    container_name: snippet_service
+    image: postgres:12
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: snippet-managment-db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    external: true
