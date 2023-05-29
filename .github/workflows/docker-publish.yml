@@ -7,13 +7,18 @@
 
 name: Gradle Build and test
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
 
 jobs:
   build:
     uses: Nachoferra1894/ingsis-actions/.github/workflows/gradle-test.yml@main
-
   publish:
+    needs: build
     uses: Nachoferra1894/ingsis-actions/.github/workflows/docker-image.yml@main
     with:
       image-name: snippet-managment-service-snippet
