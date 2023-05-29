@@ -16,5 +16,5 @@ jobs:
   publish:
     uses: Nachoferra1894/ingsis-actions/.github/workflows/docker-image.yml@main
     with:
-      image-name: micaeladominguez/snippet-managment-service-snippet
+      image-name: snippet-managment-service-snippet
       image-version: 0.0.1
