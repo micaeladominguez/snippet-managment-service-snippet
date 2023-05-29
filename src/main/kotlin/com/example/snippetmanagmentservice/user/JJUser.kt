@@ -1,4 +1,4 @@
-package snippetmanagmentservice.user
+package com.example.snippetmanagmentservice.user
 
 import jakarta.persistence.*
 import java.util.*
