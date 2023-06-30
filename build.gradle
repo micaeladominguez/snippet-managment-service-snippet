@@ -12,7 +12,18 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
+	mavenLocal()
 	mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Nachoferra1894/printscript")
+        credentials {
+//            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+//            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+			username = "nachobattolla"
+			password = "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"
+        }
+    }
 }
 
 dependencies {
@@ -22,6 +33,10 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'edu.austral.ingsis.prinstcript:runner:1.0-SNAPSHOT'
+	implementation 'edu.austral.ingsis.prinstcript:interpreter:1.0-SNAPSHOT'
+	implementation 'edu.austral.ingsis.prinstcript:linter:1.0-SNAPSHOT'
+	implementation 'edu.austral.ingsis.prinstcript:formatter:1.0-SNAPSHOT'
 }
 
 tasks.withType(KotlinCompile) {
