@@ -1,10 +1,12 @@
 package com.example.snippetmanagmentservice.snippet
 
+import com.example.snippetmanagmentservice.auth.IdExtractor.Companion.getId
 import com.example.snippetmanagmentservice.printscript.RunnerCaller
 import com.example.snippetmanagmentservice.rule.RuleService
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
 import com.example.snippetmanagmentservice.snippet.utils.getFlowCodeFromUUID
 import com.example.snippetmanagmentservice.userRule.UserRuleService
+import org.springframework.security.core.Authentication
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -56,22 +58,22 @@ class SnippetController(
     }
 
     @PutMapping("/format")
-    fun formatSnippetCode(@RequestParam("uuid") uuid: String): ResponseEntity<Snippet> {
+    fun formatSnippetCode(authentication: Authentication,@RequestParam("uuid") uuid: String): ResponseEntity<Snippet> {
         val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
         val runner = RunnerCaller()
         val rules = ruleService.getRules()
-        val userID = "1"
+        val userID = getId(authentication)
         val formattedCode = runner.formatCode(snippetCodeFlow, userRuleService.getFormattedRulesList(userID, rules))
         val updatedSnippet = snippetService.updateSnippet(UUID.fromString(uuid), formattedCode)
         return ResponseEntity(updatedSnippet, HttpStatus.OK)
     }
 
     @PutMapping("/validate")
-    fun checkValidationSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Boolean> {
+    fun checkValidationSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String): ResponseEntity<Boolean> {
         val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
         val runner = RunnerCaller()
         val rules = ruleService.getRules()
-        val userID = "1"
+        val userID = getId(authentication)
         val isValid = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
         return if (isValid){
             ResponseEntity(true, HttpStatus.OK)
