@@ -1,17 +1,14 @@
 package com.example.snippetmanagmentservice.snippet
 
-import com.example.snippetmanagmentservice.printscript.DefaultRules
 import com.example.snippetmanagmentservice.printscript.RunnerCaller
 import com.example.snippetmanagmentservice.rule.RuleService
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
-import com.example.snippetmanagmentservice.snippet.utils.stringToFlow
+import com.example.snippetmanagmentservice.snippet.utils.getFlowCodeFromUUID
 import com.example.snippetmanagmentservice.userRule.UserRuleService
-import configurationLinter.ConfigClassesLinter
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 @RestController
 @RequestMapping("/snippets")
@@ -27,19 +24,21 @@ class SnippetController(
         return ResponseEntity(createdSnippet, HttpStatus.CREATED)
     }
 
-    @PutMapping("/updateSnippet/{uuid}")
-    fun updateSnippet(@PathVariable uuid: UUID, @RequestBody newCode: String): ResponseEntity<Snippet> {
+    @PutMapping("/updateSnippet")
+    fun updateSnippet(@RequestParam("uuid") uuid: String, @RequestBody newCode: String): ResponseEntity<Snippet> {
+        val snippetUUID = UUID.fromString(uuid)
         // Verificar que el código no esté vacío
         if (newCode.isEmpty()) {
             return ResponseEntity(HttpStatus.BAD_REQUEST)
         }
-        val updatedSnippet = snippetService.updateSnippet(uuid, newCode)
+        val updatedSnippet = snippetService.updateSnippet(snippetUUID, newCode)
         return ResponseEntity(updatedSnippet, HttpStatus.OK)
     }
 
-    @GetMapping("/{uuid}")
-    fun getSnippet(@PathVariable uuid: UUID): ResponseEntity<Snippet> {
-        val snippet = snippetService.findSnippet(uuid)
+    @GetMapping("/")
+    fun getSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Snippet> {
+        val snippetUUID = UUID.fromString(uuid)
+        val snippet = snippetService.findSnippet(snippetUUID)
         return ResponseEntity(snippet, HttpStatus.OK)
     }
 
@@ -50,25 +49,26 @@ class SnippetController(
     }
 
     @DeleteMapping("/{uuid}")
-    fun deleteSnippet(@PathVariable uuid: UUID): ResponseEntity<Void> {
-        snippetService.deleteSnippet(uuid)
+    fun deleteSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Void> {
+        val snippetUUID = UUID.fromString(uuid)
+        snippetService.deleteSnippet(snippetUUID)
         return ResponseEntity.noContent().build()
     }
 
-    @PutMapping("/format/{uuid}")
-    fun formatSnippetCode(@PathVariable uuid: UUID): ResponseEntity<Snippet> {
-        val snippetCode = snippetService.findSnippet(uuid).code
-        val snippetCodeFlow = stringToFlow(snippetCode)
+    @PutMapping("/format")
+    fun formatSnippetCode(@RequestParam("uuid") uuid: String): ResponseEntity<Snippet> {
+        val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
         val runner = RunnerCaller()
-        val formattedCode = runner.formatCode(snippetCodeFlow, DefaultRules().formattingRules)
-        val updatedSnippet = snippetService.updateSnippet(uuid, formattedCode)
+        val rules = ruleService.getRules()
+        val userID = "1"
+        val formattedCode = runner.formatCode(snippetCodeFlow, userRuleService.getFormattedRulesList(userID, rules))
+        val updatedSnippet = snippetService.updateSnippet(UUID.fromString(uuid), formattedCode)
         return ResponseEntity(updatedSnippet, HttpStatus.OK)
     }
 
-    @PutMapping("/validate/{uuid}")
-    fun checkValidationSnippet(@PathVariable uuid: UUID): ResponseEntity<Boolean> {
-        val snippetCode = snippetService.findSnippet(uuid).code
-        val snippetCodeFlow = stringToFlow(snippetCode)
+    @PutMapping("/validate")
+    fun checkValidationSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Boolean> {
+        val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
         val runner = RunnerCaller()
         val rules = ruleService.getRules()
         val userID = "1"
@@ -83,9 +83,7 @@ class SnippetController(
     @PutMapping("/run")
     fun runSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Any> {
         try {
-            val snippetUUID = UUID.fromString(uuid)
-            val snippetCode = snippetService.findSnippet(snippetUUID).code
-            val snippetCodeFlow = stringToFlow(snippetCode)
+            val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
             val runner = RunnerCaller()
             val messages = runner.executeCode(snippetCodeFlow)
             return ResponseEntity(messages,HttpStatus.OK)

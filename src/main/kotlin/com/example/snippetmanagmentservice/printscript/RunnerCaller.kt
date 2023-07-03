@@ -23,6 +23,7 @@ class RunnerCaller{
 
     fun analyzeCode(snippetCodeFlow: Flow<String>, rules: ArrayList<ConfigClassesLinter>): Boolean {
         val validationString = runner.runAnalyzing(snippetCodeFlow, rules)
+        println(validationString)
         return validationString.isEmpty()
     }
 
