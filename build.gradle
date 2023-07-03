@@ -33,11 +33,11 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'edu.austral.ingsis.prinstcript:lib:1.1.0'
-	implementation 'edu.austral.ingsis.prinstcript:runner:1.1.0'
-	implementation 'edu.austral.ingsis.prinstcript:interpreter:1.1.0'
-	implementation 'edu.austral.ingsis.prinstcript:formatter:1.1.0'
-	implementation 'edu.austral.ingsis.prinstcript:linter:1.1.0'
+	implementation 'edu.austral.ingsis.prinstcript:lib:1.1.1'
+	implementation 'edu.austral.ingsis.prinstcript:runner:1.1.1'
+	implementation 'edu.austral.ingsis.prinstcript:interpreter:1.1.1'
+	implementation 'edu.austral.ingsis.prinstcript:formatter:1.1.1'
+	implementation 'edu.austral.ingsis.prinstcript:linter:1.1.1'
 }
 
 tasks.withType(KotlinCompile) {

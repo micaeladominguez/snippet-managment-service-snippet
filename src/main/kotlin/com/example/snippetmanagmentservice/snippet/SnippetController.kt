@@ -42,14 +42,14 @@ class SnippetController(private val snippetService: SnippetService) {
     }
 
     @PutMapping("/formatSnippetCode/{uuid}")
-    fun formatSnippetCode(@PathVariable uuid: UUID, @PathVariable configFile: File): ResponseEntity<Snippet> {
+    fun formatSnippetCode(@PathVariable uuid: UUID, @PathVariable configFile: File): ResponseEntity<Any> {
         val snippetCode = getSnippet(uuid).body?.code
         if (snippetCode != null){
             val snippetCodeFlow = stringToFlow(snippetCode)
-            val runner: PrintscriptRunner = CommonPrintScriptRunner()
-            val formattedCode = runner.runFormatting(snippetCodeFlow, configFile)
-            val updatedSnippet = snippetService.updateSnippet(uuid, formattedCode)
-            return ResponseEntity(updatedSnippet, HttpStatus.OK)
+            //val runner: PrintscriptRunner = CommonPrintScriptRunner()
+           // val formattedCode = runner.runFormatting(snippetCodeFlow, configFile)
+            //val updatedSnippet = snippetService.updateSnippet(uuid, formattedCode)
+            return ResponseEntity(snippetCodeFlow, HttpStatus.OK)
         }
         return ResponseEntity(HttpStatus.BAD_REQUEST)
     }

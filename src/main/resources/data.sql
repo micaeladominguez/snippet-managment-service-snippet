@@ -1,0 +1,9 @@
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('a4a982d7-a1d4-4974-b60e-7ed35dac1d28', 'camelCaseApproved', 1);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('52b24891-a5c6-4b13-89fa-36a6845c6868', 'readInputWithOperation', 1);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('844e5dbe-ba99-465a-ac8d-6f71bb2166c1', 'printWithOperation', 1);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('970293eb-bb8a-4b71-8c3a-c8fdfbc6fd29', 'spaceBeforeColon', 0);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('219765e7-bedc-404b-8ac1-bd51f30bc54e', 'spaceAfterColon', 0);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('fa0b7daf-9fee-4b34-897d-f8ebff86e1d0', 'spaceBeforeAssignation', 0);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('282af3c5-4fd7-4c92-b307-ed5f77bba6d0', 'spaceAfterAssignation', 0);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('3b69f2e5-892d-44d4-97fa-7d50510bbd6c', 'lineBreakBeforePrintln', 0);
+INSERT INTO public.rule (id, name, type_of_rule) VALUES ('148f3dc6-8197-4a72-8e69-55aa5f28e568', 'spaceIndexedForIf', 0);
