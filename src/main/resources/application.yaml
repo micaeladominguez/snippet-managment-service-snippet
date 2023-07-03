@@ -1,3 +1,6 @@
+auth0:
+  audience: 1E4bHwGjDsGhgkLHcrlk0xemreuSXpnd
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/snippet_db
@@ -12,3 +15,15 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create
+
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: https://dev-c4l43o2ndcdikqar.us.auth0.com/
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
