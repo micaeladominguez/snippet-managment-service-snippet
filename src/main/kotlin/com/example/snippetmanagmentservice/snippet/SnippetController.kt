@@ -1,6 +1,7 @@
 package com.example.snippetmanagmentservice.snippet
 
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
+import com.example.snippetmanagmentservice.snippet.utils.stringToFlow
 import printscript.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -54,11 +55,7 @@ class SnippetController(private val snippetService: SnippetService) {
 //        }
 //        return ResponseEntity(HttpStatus.BAD_REQUEST)
 //    }
-    fun stringToFlow(text: String): Flow<String> {
-        return flow {
-            emit(text)
-        }
-    }
+
 
     @GetMapping("/{uuid}")
     fun getSnippet(@PathVariable uuid: UUID): ResponseEntity<Snippet> {
