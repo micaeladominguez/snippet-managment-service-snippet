@@ -52,14 +52,11 @@ class SnippetController(private val snippetService: SnippetService) {
     @PutMapping("/formatCode/{uuid}")
     fun formatSnippetCode(@PathVariable uuid: UUID, @RequestBody rules: ArrayList<ConfigClasses>): ResponseEntity<Any> {
         val snippetCode = snippetService.findSnippet(uuid).code
-        if (snippetCode != null){
-            val snippetCodeFlow = stringToFlow(snippetCode)
-            val runner = RunnerCaller()
-            val formattedCode = runner.formatCode(snippetCodeFlow, rules)
-            val updatedSnippet = snippetService.updateSnippet(uuid, formattedCode)
-            return ResponseEntity(updatedSnippet, HttpStatus.OK)
-        }
-        return ResponseEntity(HttpStatus.BAD_REQUEST)
+        val snippetCodeFlow = stringToFlow(snippetCode)
+        val runner = RunnerCaller()
+        val formattedCode = runner.formatCode(snippetCodeFlow, rules)
+        val updatedSnippet = snippetService.updateSnippet(uuid, formattedCode)
+        return ResponseEntity(updatedSnippet, HttpStatus.OK)
     }
 
     @PutMapping("/validate/{uuid}")
@@ -76,7 +73,7 @@ class SnippetController(private val snippetService: SnippetService) {
     }
 
     @PutMapping("/run/{uuid}")
-    fun checkValidationSnippet(@PathVariable uuid: UUID): ResponseEntity<ArrayList<String>> {
+    fun runSnippet(@PathVariable uuid: UUID): ResponseEntity<ArrayList<String>> {
         val snippetCode = snippetService.findSnippet(uuid).code
         val snippetCodeFlow = stringToFlow(snippetCode)
         val runner = RunnerCaller()
