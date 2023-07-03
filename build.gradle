@@ -19,6 +19,7 @@ repositories {
 		url = uri("https://maven.pkg.github.com/Nachoferra1894/printscript")
 		credentials {
             username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+			password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
 		}
 	}
 }
@@ -27,13 +28,16 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'edu.austral.ingsis.prinstcript:runner:1.1-SNAPSHOT'
-	implementation 'edu.austral.ingsis.prinstcript:linter:1.1-SNAPSHOT'
-	implementation 'edu.austral.ingsis.prinstcript:formatter:1.1-SNAPSHOT'
-	implementation 'edu.austral.ingsis.prinstcript:interpreter:1.1-SNAPSHOT'
+	implementation 'edu.austral.ingsis.prinstcript:lib:1.1.0'
+	implementation 'edu.austral.ingsis.prinstcript:runner:1.1.0'
+	implementation 'edu.austral.ingsis.prinstcript:interpreter:1.1.0'
+	implementation 'edu.austral.ingsis.prinstcript:formatter:1.1.0'
+	implementation 'edu.austral.ingsis.prinstcript:linter:1.1.0'
 }
 
 tasks.withType(KotlinCompile) {

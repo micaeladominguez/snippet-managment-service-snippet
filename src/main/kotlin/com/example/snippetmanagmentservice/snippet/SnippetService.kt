@@ -11,13 +11,13 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
     }
 
     fun updateSnippet(uuid: UUID, newCode: String): Snippet {
-        val snippet = snippetRepository.findSnippetByUuid(uuid) ?: throw RuntimeException("Snippet not found")
+        val snippet = snippetRepository.findSnippetById(uuid) ?: throw RuntimeException("Snippet not found")
         val updatedSnippet = snippet.copy(code = newCode)
         return snippetRepository.save(updatedSnippet)
     }
 
     fun findSnippet(uuid: UUID): Snippet {
-        return snippetRepository.findSnippetByUuid(uuid) ?: throw RuntimeException("Snippet not found")
+        return snippetRepository.findSnippetById(uuid) ?: throw RuntimeException("Snippet not found")
     }
 
     fun findSnippets(uuids: List<UUID>): List<Snippet> {
@@ -25,7 +25,7 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
     }
 
     fun deleteSnippet(uuid: UUID) {
-        val snippet = snippetRepository.findSnippetByUuid(uuid) ?: throw RuntimeException("Snippet not found")
+        val snippet = snippetRepository.findSnippetById(uuid) ?: throw RuntimeException("Snippet not found")
         snippetRepository.delete(snippet)
     }
 }
