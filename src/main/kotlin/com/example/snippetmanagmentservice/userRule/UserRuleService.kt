@@ -4,7 +4,10 @@ import com.example.snippetmanagmentservice.rule.Rule
 import com.example.snippetmanagmentservice.rule.TypeOfRule
 import com.example.snippetmanagmentservice.userRule.dto.RulesValues
 import com.example.snippetmanagmentservice.userRule.dto.UserRuleGet
+import com.example.snippetmanagmentservice.userRule.util.RuleFactory
 import com.example.snippetmanagmentservice.userRule.util.ruleDefaultValues
+import configuration.ConfigClasses
+import configurationLinter.ConfigClassesLinter
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -15,20 +18,22 @@ class UserRuleService(private val userRuleRepository: UserRuleRepository) {
         if(userRuleRepository.hasAllRules(userId)){
            return getRulesForUserResponse(userId)
         }else{
-            for(rule in rules){
-                val defaultValue = ruleDefaultValues[rule.name]
-                if(defaultValue != null){
-                    val userRule = userRuleRepository.findByUserIdAndRuleId(userId, rule.id)
-                    if(userRule == null){
-                        userRuleRepository.save(UserRule(UUID.randomUUID(), userId, rule, defaultValue))
-                    }
-                }
-            }
+            defineRulesForUser(userId, rules)
         }
        return getRulesForUserResponse(userId)
     }
 
-
+    private fun defineRulesForUser(userId: String, rules: List<Rule>){
+        for(rule in rules){
+            val defaultValue = ruleDefaultValues[rule.name]
+            if(defaultValue != null){
+                val userRule = userRuleRepository.findByUserIdAndRuleId(userId, rule.id)
+                if(userRule == null){
+                    userRuleRepository.save(UserRule(UUID.randomUUID(), userId, rule, defaultValue))
+                }
+            }
+        }
+    }
     private fun getRulesForUserResponse(userId: String): UserRuleGet {
         val rulesForUser = userRuleRepository.findByUserId(userId)
         return formatRules(rulesForUser, userId)
@@ -52,5 +57,38 @@ class UserRuleService(private val userRuleRepository: UserRuleRepository) {
     fun getFormattedRules(userId: String) : UserRuleGet {
         val rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
         return formatRules(rulesForUser, userId)
+    }
+
+
+    fun getFormattedRulesList(userId: String, rules: List<Rule>) : List<ConfigClasses>{
+        val list = mutableListOf<ConfigClasses>()
+        var rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
+        if(rulesForUser.isEmpty()){
+            defineRulesForUser(userId, rules)
+            rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
+        }
+        for(formattedRule in rulesForUser){
+            val configClass = RuleFactory.createRuleForFormatter(formattedRule.rule.name, formattedRule.value)
+            if(configClass != null){
+                list.add(configClass)
+            }
+        }
+        return list
+    }
+
+    fun getLintedRulesList(userId: String, rules: List<Rule>) : List<ConfigClassesLinter>{
+        val list = mutableListOf<ConfigClassesLinter>()
+        var rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.LINTER)
+        if(rulesForUser.isEmpty()){
+            defineRulesForUser(userId, rules)
+            rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.LINTER)
+        }
+        for(lintedRules in rulesForUser){
+            val configClass = RuleFactory.createRuleForLinter(lintedRules.rule.name, lintedRules.value)
+            if(configClass != null){
+                list.add(configClass)
+            }
+        }
+        return list
     }
 }

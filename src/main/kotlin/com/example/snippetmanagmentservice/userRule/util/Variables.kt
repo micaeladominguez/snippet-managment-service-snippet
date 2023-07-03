@@ -1,5 +1,6 @@
 package com.example.snippetmanagmentservice.userRule.util
 
+
 val ruleDefaultValues: Map<String, String> = mapOf(
     "camelCaseApproved" to "true",
     "readInputWithOperation" to "true",
