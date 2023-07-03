@@ -71,7 +71,7 @@ class SnippetController(
         val snippetCodeFlow = stringToFlow(snippetCode)
         val runner = RunnerCaller()
         val rules = ruleService.getRules()
-        val userID = 1
+        val userID = "1"
         val isValid = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
         return if (isValid){
             ResponseEntity(true, HttpStatus.OK)

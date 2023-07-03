@@ -9,7 +9,8 @@ import com.example.snippetmanagmentservice.userRule.util.ruleDefaultValues
 import configuration.ConfigClasses
 import configurationLinter.ConfigClassesLinter
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
+
 
 @Service
 class UserRuleService(private val userRuleRepository: UserRuleRepository) {
@@ -60,8 +61,8 @@ class UserRuleService(private val userRuleRepository: UserRuleRepository) {
     }
 
 
-    fun getFormattedRulesList(userId: String, rules: List<Rule>) : List<ConfigClasses>{
-        val list = mutableListOf<ConfigClasses>()
+    fun getFormattedRulesList(userId: String, rules: List<Rule>) :  ArrayList<ConfigClasses>{
+        val list = ArrayList<ConfigClasses>()
         var rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
         if(rulesForUser.isEmpty()){
             defineRulesForUser(userId, rules)
@@ -76,8 +77,8 @@ class UserRuleService(private val userRuleRepository: UserRuleRepository) {
         return list
     }
 
-    fun getLintedRulesList(userId: String, rules: List<Rule>) : List<ConfigClassesLinter>{
-        val list = mutableListOf<ConfigClassesLinter>()
+    fun getLintedRulesList(userId: String, rules: List<Rule>) : ArrayList<ConfigClassesLinter>{
+        val list = ArrayList<ConfigClassesLinter>()
         var rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.LINTER)
         if(rulesForUser.isEmpty()){
             defineRulesForUser(userId, rules)
