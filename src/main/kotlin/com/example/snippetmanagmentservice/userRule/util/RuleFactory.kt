@@ -45,30 +45,34 @@ class RuleFactory {
             }
         }
 
-        fun createRuleForLinter(name: String, value: String): ConfigClassesLinter? {
+        fun createRuleForLinter(name: String, value: String): List<ConfigClassesLinter> {
             return when (name) {
                 "camelCaseApproved" -> {
-                    if(value == "true"){
-                        return CamelCase()
-                    }else{
-                        return SnakeCase()
+                    if (value == "true") {
+                        listOf(CamelCase())
+                    } else {
+                        listOf(SnakeCase())
                     }
                 }
                 "readInputWithOperation" -> {
-                    if(value == "true"){
-                        return ReadInputOperations()
-                    }else{
-                        return ReadInputNormal()
+                    val list = ArrayList<ConfigClassesLinter>()
+                    list.add(ReadInputNormal())
+
+                    if (value == "true") {
+                        list.add(ReadInputOperations())
                     }
+                    list
                 }
                 "printWithOperation" -> {
-                    if(value == "true"){
-                        return PrintOperations()
-                    }else{
-                        return PrintNormal()
+                    val list = ArrayList<ConfigClassesLinter>()
+                    list.add(PrintNormal())
+
+                    if (value == "true") {
+                        list.add(PrintOperations())
                     }
+                    list
                 }
-                else -> null
+                else -> emptyList()
             }
         }
     }

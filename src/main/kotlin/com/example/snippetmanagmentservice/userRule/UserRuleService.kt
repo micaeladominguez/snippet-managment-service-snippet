@@ -86,8 +86,8 @@ class UserRuleService(private val userRuleRepository: UserRuleRepository) {
         }
         for(lintedRules in rulesForUser){
             val configClass = RuleFactory.createRuleForLinter(lintedRules.rule.name, lintedRules.value)
-            if(configClass != null){
-                list.add(configClass)
+            if(configClass.isNotEmpty()){
+                list.addAll(configClass)
             }
         }
         return list
