@@ -1,15 +1,15 @@
 package com.example.snippetmanagmentservice.snippet
 
+import com.example.snippetmanagmentservice.printscript.RunnerCaller
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
 import com.example.snippetmanagmentservice.snippet.utils.stringToFlow
-import printscript.*
+import configuration.ConfigClasses
+import configurationLinter.ConfigClassesLinter
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import java.io.File
+import kotlin.collections.ArrayList
 
 @RestController
 @RequestMapping("/snippets")
@@ -31,41 +31,9 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity(updatedSnippet, HttpStatus.OK)
     }
 
-    @PutMapping("/formatSnippetCode/{uuid}")
-    fun formatSnippetCode(@PathVariable uuid: UUID, @PathVariable configFile: File): ResponseEntity<Any> {
-        val snippetCode = getSnippet(uuid).body?.code
-        if (snippetCode != null){
-            val snippetCodeFlow = stringToFlow(snippetCode)
-            //val runner: PrintscriptRunner = CommonPrintScriptRunner()
-           // val formattedCode = runner.runFormatting(snippetCodeFlow, configFile)
-            //val updatedSnippet = snippetService.updateSnippet(uuid, formattedCode)
-            return ResponseEntity(snippetCodeFlow, HttpStatus.OK)
-        }
-        return ResponseEntity(HttpStatus.BAD_REQUEST)
-    }
-
-//    @PutMapping("//{uuid}")
-//    fun checkValidationSnippet(@PathVariable uuid: UUID, @PathVariable configFile: File): ResponseEntity<Snippet> {
-//        val snippetCode = getSnippet(uuid).body?.code
-//        if (snippetCode != null){
-//            val snippetCodeFlow = stringToFlow(snippetCode)
-//            val runner: PrintscriptRunner = CommonPrintScriptRunner()
-//            val isValidCode = runner.runAnalyzing(snippetCodeFlow, configFile)
-//            return ResponseEntity(, HttpStatus.OK)
-//        }
-//        return ResponseEntity(HttpStatus.BAD_REQUEST)
-//    }
-
-
     @GetMapping("/{uuid}")
     fun getSnippet(@PathVariable uuid: UUID): ResponseEntity<Snippet> {
         val snippet = snippetService.findSnippet(uuid)
-        return ResponseEntity(snippet, HttpStatus.OK)
-    }
-
-    @GetMapping("/hola")
-    fun getSnippetS(): ResponseEntity<List<Snippet>> {
-        val snippet = snippetService.allSnippets()
         return ResponseEntity(snippet, HttpStatus.OK)
     }
 
@@ -79,6 +47,41 @@ class SnippetController(private val snippetService: SnippetService) {
     fun deleteSnippet(@PathVariable uuid: UUID): ResponseEntity<Void> {
         snippetService.deleteSnippet(uuid)
         return ResponseEntity.noContent().build()
+    }
+
+    @PutMapping("/formatCode/{uuid}")
+    fun formatSnippetCode(@PathVariable uuid: UUID, @RequestBody rules: ArrayList<ConfigClasses>): ResponseEntity<Any> {
+        val snippetCode = snippetService.findSnippet(uuid).code
+        if (snippetCode != null){
+            val snippetCodeFlow = stringToFlow(snippetCode)
+            val runner = RunnerCaller()
+            val formattedCode = runner.formatCode(snippetCodeFlow, rules)
+            val updatedSnippet = snippetService.updateSnippet(uuid, formattedCode)
+            return ResponseEntity(updatedSnippet, HttpStatus.OK)
+        }
+        return ResponseEntity(HttpStatus.BAD_REQUEST)
+    }
+
+    @PutMapping("/validate/{uuid}")
+    fun checkValidationSnippet(@PathVariable uuid: UUID, @RequestBody rules: ArrayList<ConfigClassesLinter>): ResponseEntity<Boolean> {
+        val snippetCode = snippetService.findSnippet(uuid).code
+        val snippetCodeFlow = stringToFlow(snippetCode)
+        val runner = RunnerCaller()
+        val isValid = runner.analyzeCode(snippetCodeFlow, rules)
+        return if (isValid){
+            ResponseEntity(true, HttpStatus.OK)
+        }else{
+            ResponseEntity(false, HttpStatus.OK)
+        }
+    }
+
+    @PutMapping("/run/{uuid}")
+    fun checkValidationSnippet(@PathVariable uuid: UUID): ResponseEntity<ArrayList<String>> {
+        val snippetCode = snippetService.findSnippet(uuid).code
+        val snippetCodeFlow = stringToFlow(snippetCode)
+        val runner = RunnerCaller()
+        val messages = runner.executeCode(snippetCodeFlow)
+        return ResponseEntity(messages,HttpStatus.OK)
     }
 
 }

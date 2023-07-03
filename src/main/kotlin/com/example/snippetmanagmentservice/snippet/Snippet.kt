@@ -1,7 +1,6 @@
 package com.example.snippetmanagmentservice.snippet
 
 import jakarta.persistence.*
-import java.io.InputStream
 import java.util.UUID
 
 @Entity
