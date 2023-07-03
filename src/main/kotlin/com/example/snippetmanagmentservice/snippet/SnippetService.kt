@@ -1,13 +1,17 @@
 package com.example.snippetmanagmentservice.snippet
 
+import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class SnippetService(private val snippetRepository: SnippetRepository) {
 
-    fun saveSnippet(snippet: Snippet): Snippet {
-        return snippetRepository.save(snippet)
+    fun allSnippets(): List<Snippet> {
+        return snippetRepository.findAll().toList()
+    }
+    fun saveSnippet(snippet: SnippetPostDTO): Snippet {
+        return snippetRepository.save(Snippet(UUID.randomUUID(), snippet.name, snippet.type, snippet.code))
     }
 
     fun updateSnippet(uuid: UUID, newCode: String): Snippet {

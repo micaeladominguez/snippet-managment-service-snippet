@@ -18,4 +18,6 @@ data class Snippet(
 
     @Column(name = "code")
     val code: String
-)
+){
+    constructor(): this(UUID.randomUUID(), "", "", "")
+}

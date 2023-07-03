@@ -1,5 +1,6 @@
 package com.example.snippetmanagmentservice.snippet
 
+import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
 import printscript.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,19 +15,7 @@ import java.io.File
 class SnippetController(private val snippetService: SnippetService) {
 
     @PostMapping("/create")
-    fun createSnippet(@RequestBody snippet: Snippet): ResponseEntity<Snippet> {
-        // Validar que el nombre no esté vacío
-        if (snippet.name.isEmpty()) {
-            return ResponseEntity(HttpStatus.BAD_REQUEST)
-        }
-        // Validar que el tipo no esté vacío
-        if (snippet.type.isEmpty()) {
-            return ResponseEntity(HttpStatus.BAD_REQUEST)
-        }
-        // Validar que el código no esté vacío
-        if (snippet.code.isEmpty()) {
-            return ResponseEntity(HttpStatus.BAD_REQUEST)
-        }
+    fun createSnippet(@RequestBody snippet: SnippetPostDTO): ResponseEntity<Snippet> {
         val createdSnippet = snippetService.saveSnippet(snippet)
         return ResponseEntity(createdSnippet, HttpStatus.CREATED)
     }
@@ -74,6 +63,12 @@ class SnippetController(private val snippetService: SnippetService) {
     @GetMapping("/{uuid}")
     fun getSnippet(@PathVariable uuid: UUID): ResponseEntity<Snippet> {
         val snippet = snippetService.findSnippet(uuid)
+        return ResponseEntity(snippet, HttpStatus.OK)
+    }
+
+    @GetMapping("/hola")
+    fun getSnippetS(): ResponseEntity<List<Snippet>> {
+        val snippet = snippetService.allSnippets()
         return ResponseEntity(snippet, HttpStatus.OK)
     }
 
