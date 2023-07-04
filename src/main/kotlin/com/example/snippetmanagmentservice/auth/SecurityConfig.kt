@@ -3,6 +3,7 @@ package com.example.snippetmanagmentservice.auth
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod.*
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.core.OAuth2TokenValidator
@@ -24,12 +25,15 @@ class SecurityConfig(
     fun securityWebFilterChain(http: HttpSecurity): DefaultSecurityFilterChain {
         return http
             .authorizeHttpRequests {
-                it.anyRequest().permitAll()
-                /*.requestMatchers(GET, "/test").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(GET, "/authorization").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(POST, "/authorization").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(PUT, "/authorization").hasAuthority("SCOPE_read:snippets")
-                .anyRequest().denyAll()*/
+                it/*.anyRequest().permitAll()*/
+                .requestMatchers(GET, "/rules").hasAuthority("SCOPE_read:snippets")
+                .requestMatchers(GET, "/snippets").hasAuthority("SCOPE_read:snippets")
+                .requestMatchers(POST, "/snippets").hasAuthority("SCOPE_read:snippets")
+                .requestMatchers(PUT, "/snippets").hasAuthority("SCOPE_read:snippets")
+                    .requestMatchers(GET, "/user/rules").hasAuthority("SCOPE_read:snippets")
+                    .requestMatchers(POST, "/user/rules").hasAuthority("SCOPE_read:snippets")
+                    .requestMatchers(PUT, "/user/rules").hasAuthority("SCOPE_read:snippets")
+                .anyRequest().denyAll()
             }
             .oauth2ResourceServer { it.jwt { jwt -> jwt.decoder(jwtDecoder()) } }
             .cors(withDefaults())
