@@ -21,8 +21,8 @@ class RunnerCaller{
     fun formatCode(snippetCodeFlow: Flow<String>, rules: ArrayList<ConfigClasses>): String {
         try {
             return runner.runFormatting(snippetCodeFlow, rules)
-        } catch (e: Error){
-            throw Error(e.message)
+        } catch (e: Exception){
+            throw RuntimeException("Error formatting code: ${e.message}", e)
         }
     }
 
@@ -35,8 +35,8 @@ class RunnerCaller{
             }else{
                 AnalyzeData(false, validationString)
             }
-        }catch (e: Error){
-            throw Error(e.message)
+        }catch (e: Exception){
+            throw RuntimeException("Error analyzing code: ${e.message}", e)
         }
     }
 
@@ -44,8 +44,8 @@ class RunnerCaller{
         try {
             runner.runExecution(snippetCodeFlow, CommonErrorHandler())
             return printer.getMessages()
-        }catch (e: Error){
-            throw Error(e.message)
+        }catch (e: Exception){
+            throw RuntimeException("Error executing code: ${e.message}", e)
         }
     }
 

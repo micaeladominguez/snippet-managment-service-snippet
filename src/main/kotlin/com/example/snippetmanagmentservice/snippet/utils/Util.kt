@@ -1,28 +1,38 @@
 package com.example.snippetmanagmentservice.snippet.utils
 
+import java.io.ByteArrayInputStream
+import java.nio.charset.StandardCharsets
 import com.example.snippetmanagmentservice.auth.IdExtractor
 import com.example.snippetmanagmentservice.printscript.RunnerCaller
 import com.example.snippetmanagmentservice.rule.RuleService
 import com.example.snippetmanagmentservice.snippet.Snippet
 import com.example.snippetmanagmentservice.snippet.SnippetService
 import com.example.snippetmanagmentservice.userRule.UserRuleService
+import input.InputStreamInput
+import input.LexerInput
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import org.springframework.security.core.Authentication
+import java.io.InputStream
 import java.util.*
+
 
 fun getFlowCodeFromUUID(id: String, service: SnippetService): Flow<String> {
     val snippetUUID = UUID.fromString(id)
     val snippetCode = service.findSnippet(snippetUUID).code
-    return flow {
-        emit(snippetCode)
-    }
+    val inputStreamCode = stringToInputStream(snippetCode)
+    val input: LexerInput = InputStreamInput(inputStreamCode)
+    return input.getFlow()
+}
+
+fun stringToInputStream(input: String): InputStream {
+    val bytes = input.toByteArray(StandardCharsets.UTF_8)
+    return ByteArrayInputStream(bytes)
 }
 
 fun stringToFlow(code: String): Flow<String>{
-    return flow {
-        emit(code)
-    }
+    val inputStreamCode = stringToInputStream(code)
+    val input: LexerInput = InputStreamInput(inputStreamCode)
+    return input.getFlow()
 }
 
 fun getAnalyzeDataFromSnippet(

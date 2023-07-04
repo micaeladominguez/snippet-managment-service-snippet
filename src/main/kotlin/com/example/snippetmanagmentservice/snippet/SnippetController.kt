@@ -6,12 +6,14 @@ import com.example.snippetmanagmentservice.rule.RuleService
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
 import com.example.snippetmanagmentservice.snippet.utils.*
 import com.example.snippetmanagmentservice.userRule.UserRuleService
-import org.springframework.security.core.Authentication
+import input.InputStreamInput
+import input.LexerInput
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 @RestController
 @RequestMapping("/snippets")
@@ -73,7 +75,7 @@ class SnippetController(
             val formattedCode = runner.formatCode(snippetCodeFlow, userRuleService.getFormattedRulesList(userID, rules))
             val updatedSnippet = snippetService.updateSnippet(UUID.fromString(uuid), formattedCode)
             return ResponseEntity(updatedSnippet, HttpStatus.OK)
-        }catch (e: Error){
+        }catch (e: Exception){
             return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
         }
     }
@@ -87,7 +89,7 @@ class SnippetController(
             val userID = getId(authentication)
             val formattedCode = runner.formatCode(codeFlow, userRuleService.getFormattedRulesList(userID, rules))
             return ResponseEntity(formattedCode, HttpStatus.OK)
-        } catch (e: Error){
+        } catch (e: Exception){
             return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
         }
     }
@@ -101,7 +103,7 @@ class SnippetController(
             val userID = getId(authentication)
             val isValidCode = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
             return ResponseEntity(isValidCode, HttpStatus.OK)
-        } catch (e: Error){
+        } catch (e: Exception){
             return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
         }
     }
@@ -114,7 +116,7 @@ class SnippetController(
             val messages = runner.executeCode(snippetCodeFlow)
             return ResponseEntity(messages,HttpStatus.OK)
         }catch (
-            e: Error
+            e: Exception
         ){
             return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
         }
