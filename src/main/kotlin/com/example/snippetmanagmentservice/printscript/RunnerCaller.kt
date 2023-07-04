@@ -1,6 +1,7 @@
 package com.example.snippetmanagmentservice.printscript
 
 import CommonErrorHandler
+import com.example.snippetmanagmentservice.snippet.utils.AnalyzeData
 import configuration.ConfigClasses
 import configurationLinter.ConfigClassesLinter
 import interpreterUtils.ReadInput
@@ -21,10 +22,14 @@ class RunnerCaller{
         return runner.runFormatting(snippetCodeFlow, rules)
     }
 
-    fun analyzeCode(snippetCodeFlow: Flow<String>, rules: ArrayList<ConfigClassesLinter>): Boolean {
+    fun analyzeCode(snippetCodeFlow: Flow<String>, rules: ArrayList<ConfigClassesLinter>): AnalyzeData {
         val validationString = runner.runAnalyzing(snippetCodeFlow, rules)
         println(validationString)
-        return validationString.isEmpty()
+        return if (validationString.isEmpty()){
+            AnalyzeData(true, validationString)
+        }else{
+            AnalyzeData(false, validationString)
+        }
     }
 
     fun executeCode(snippetCodeFlow: Flow<String>): ArrayList<String>{

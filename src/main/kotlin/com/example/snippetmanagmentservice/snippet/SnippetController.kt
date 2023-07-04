@@ -4,7 +4,9 @@ import com.example.snippetmanagmentservice.auth.IdExtractor.Companion.getId
 import com.example.snippetmanagmentservice.printscript.RunnerCaller
 import com.example.snippetmanagmentservice.rule.RuleService
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
+import com.example.snippetmanagmentservice.snippet.utils.AnalyzeData
 import com.example.snippetmanagmentservice.snippet.utils.getFlowCodeFromUUID
+import com.example.snippetmanagmentservice.snippet.utils.stringToFlow
 import com.example.snippetmanagmentservice.userRule.UserRuleService
 import org.springframework.security.core.Authentication
 import org.springframework.http.HttpStatus
@@ -26,7 +28,7 @@ class SnippetController(
         return ResponseEntity(createdSnippet, HttpStatus.CREATED)
     }
 
-    @PutMapping("/updateSnippet")
+    @PutMapping("/update/snippet")
     fun updateSnippet(@RequestParam("uuid") uuid: String, @RequestBody newCode: String): ResponseEntity<Snippet> {
         val snippetUUID = UUID.fromString(uuid)
         // Verificar que el código no esté vacío
@@ -57,7 +59,7 @@ class SnippetController(
         return ResponseEntity.noContent().build()
     }
 
-    @PutMapping("/format")
+    @PutMapping("/format/snippet")
     fun formatSnippetCode(authentication: Authentication,@RequestParam("uuid") uuid: String): ResponseEntity<Snippet> {
         val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
         val runner = RunnerCaller()
@@ -68,18 +70,24 @@ class SnippetController(
         return ResponseEntity(updatedSnippet, HttpStatus.OK)
     }
 
+    @PutMapping("/format/code")
+    fun formatCode(authentication: Authentication,@RequestBody code: String): ResponseEntity<String> {
+        val codeFlow = stringToFlow(code)
+        val runner = RunnerCaller()
+        val rules = ruleService.getRules()
+        val userID = getId(authentication)
+        val formattedCode = runner.formatCode(codeFlow, userRuleService.getFormattedRulesList(userID, rules))
+        return ResponseEntity(formattedCode, HttpStatus.OK)
+    }
+
     @PutMapping("/validate")
-    fun checkValidationSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String): ResponseEntity<Boolean> {
+    fun checkValidationSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String): ResponseEntity<AnalyzeData> {
         val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
         val runner = RunnerCaller()
         val rules = ruleService.getRules()
         val userID = getId(authentication)
-        val isValid = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
-        return if (isValid){
-            ResponseEntity(true, HttpStatus.OK)
-        }else{
-            ResponseEntity(false, HttpStatus.OK)
-        }
+        val isValidCode = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
+        return ResponseEntity(isValidCode, HttpStatus.OK)
     }
 
     @PutMapping("/run")

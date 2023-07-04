@@ -12,3 +12,14 @@ fun getFlowCodeFromUUID(id: String, service: SnippetService): Flow<String> {
         emit(snippetCode)
     }
 }
+
+fun stringToFlow(code: String): Flow<String>{
+    return flow {
+        emit(code)
+    }
+}
+
+class AnalyzeData(codeOk: Boolean, errors: String){
+    val isValid: Boolean = codeOk
+    val linesErrors: String = errors
+}
