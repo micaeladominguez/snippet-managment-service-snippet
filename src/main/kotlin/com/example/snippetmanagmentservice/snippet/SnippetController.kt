@@ -4,15 +4,14 @@ import com.example.snippetmanagmentservice.auth.IdExtractor.Companion.getId
 import com.example.snippetmanagmentservice.printscript.RunnerCaller
 import com.example.snippetmanagmentservice.rule.RuleService
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
-import com.example.snippetmanagmentservice.snippet.utils.AnalyzeData
-import com.example.snippetmanagmentservice.snippet.utils.getFlowCodeFromUUID
-import com.example.snippetmanagmentservice.snippet.utils.stringToFlow
+import com.example.snippetmanagmentservice.snippet.utils.*
 import com.example.snippetmanagmentservice.userRule.UserRuleService
 import org.springframework.security.core.Authentication
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 @RestController
 @RequestMapping("/snippets")
@@ -47,9 +46,14 @@ class SnippetController(
     }
 
     @GetMapping
-    fun getSnippets(@RequestParam("uuids") uuids: List<UUID>): ResponseEntity<List<Snippet>> {
+    fun getSnippets(authentication: Authentication, @RequestParam("uuids") uuids: List<UUID>): ResponseEntity<List<AnalyzedSnippet>> {
         val snippets = snippetService.findSnippets(uuids)
-        return ResponseEntity(snippets, HttpStatus.OK)
+        val analyzedSnippets = ArrayList<AnalyzedSnippet>()
+        for (snippet in snippets){
+            val data = getAnalyzeDataFromSnippet(snippet.id,snippetService,ruleService,userRuleService,authentication)
+            analyzedSnippets.add(AnalyzedSnippet(snippet,data))
+        }
+        return ResponseEntity(analyzedSnippets, HttpStatus.OK)
     }
 
     @DeleteMapping("/{uuid}")
