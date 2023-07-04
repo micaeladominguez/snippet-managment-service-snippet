@@ -16,7 +16,7 @@ on:
       - closed
     branches:
       - main
-      
+
 jobs:
   build:
     uses: Nachoferra1894/ingsis-actions/.github/workflows/gradle-test.yml@main
