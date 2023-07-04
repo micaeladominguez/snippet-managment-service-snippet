@@ -7,8 +7,15 @@
 
 name: Gradle Build and publish image to github packages
 
-on: [push,pull_request]
-
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 
 jobs:
   build:
