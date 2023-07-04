@@ -3,6 +3,7 @@ package com.example.snippetmanagmentservice.userRule
 import com.example.snippetmanagmentservice.rule.Rule
 import com.example.snippetmanagmentservice.rule.TypeOfRule
 import com.example.snippetmanagmentservice.userRule.dto.RulesValues
+import com.example.snippetmanagmentservice.userRule.dto.UpdateRules
 import com.example.snippetmanagmentservice.userRule.dto.UserRuleGet
 import com.example.snippetmanagmentservice.userRule.util.RuleFactory
 import com.example.snippetmanagmentservice.userRule.util.ruleDefaultValues
@@ -50,13 +51,39 @@ class UserRuleService(private val userRuleRepository: UserRuleRepository) {
     }
 
 
-    fun getLintedRules(userId: String) : UserRuleGet {
-        val rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.LINTER)
+    fun getLintedRules(userId: String, rules: List<Rule>) : UserRuleGet {
+        var rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.LINTER)
+        if(rulesForUser.isEmpty()){
+            defineRulesForUser(userId, rules)
+            rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
+        }
         return formatRules(rulesForUser, userId)
     }
 
-    fun getFormattedRules(userId: String) : UserRuleGet {
-        val rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
+    fun updateFormattingRules(userId: String, rules: UpdateRules) : List<UserRule> {
+        updateRules(userId, rules)
+        return userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
+    }
+
+    private fun updateRules(userId: String, rules: UpdateRules) {
+        for(rule in rules.rules){
+            val createdRule = userRuleRepository.findByUserIdAndRuleId(userId, rule.ruleId)
+            if(createdRule != null){
+                userRuleRepository.save(UserRule(createdRule.id, userId, createdRule.rule, rule.value))
+            }
+        }
+    }
+    fun updateLintingRules(userId: String, rules: UpdateRules) : List<UserRule> {
+        updateRules(userId, rules)
+        return userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.LINTER)
+    }
+
+    fun getFormattedRules(userId: String, rules: List<Rule>) : UserRuleGet {
+        var rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
+        if(rulesForUser.isEmpty()){
+            defineRulesForUser(userId, rules)
+            rulesForUser = userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
+        }
         return formatRules(rulesForUser, userId)
     }
 

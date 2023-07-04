@@ -39,6 +39,8 @@ class SecurityConfig(
                 .requestMatchers(GET, "/user/rules").authenticated()
                 .requestMatchers(GET, "/user/rules/formatted").authenticated()
                 .requestMatchers(GET, "/user/rules/linted").authenticated()
+                .requestMatchers(PUT, "/user/rules/formatted").authenticated()
+                .requestMatchers(PUT, "/user/rules/linted").authenticated()
                 .requestMatchers(POST, "/user/rules").authenticated()
                 .requestMatchers(PUT, "/user/rules").authenticated()
                 .anyRequest().denyAll()
