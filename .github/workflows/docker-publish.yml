@@ -9,6 +9,7 @@ name: Gradle Build and publish image to github packages
 
 on: [push,pull_request]
 
+
 jobs:
   build:
     uses: Nachoferra1894/ingsis-actions/.github/workflows/gradle-test.yml@main
