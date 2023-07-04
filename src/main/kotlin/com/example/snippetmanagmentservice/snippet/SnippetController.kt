@@ -56,7 +56,7 @@ class SnippetController(
         return ResponseEntity(analyzedSnippets, HttpStatus.OK)
     }
 
-    @DeleteMapping("/{uuid}")
+    @DeleteMapping()
     fun deleteSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Void> {
         val snippetUUID = UUID.fromString(uuid)
         snippetService.deleteSnippet(snippetUUID)
