@@ -41,11 +41,11 @@ dependencies {
 	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
 
 	//printScript
-	implementation 'edu.austral.ingsis.prinstcript:lib:1.1.3'
-	implementation 'edu.austral.ingsis.prinstcript:runner:1.1.3'
-	implementation 'edu.austral.ingsis.prinstcript:interpreter:1.1.3'
-	implementation 'edu.austral.ingsis.prinstcript:formatter:1.1.3'
-	implementation 'edu.austral.ingsis.prinstcript:linter:1.1.3'
+	implementation 'edu.austral.ingsis.prinstcript:lib:1.1.4'
+	implementation 'edu.austral.ingsis.prinstcript:runner:1.1.4'
+	implementation 'edu.austral.ingsis.prinstcript:interpreter:1.1.4'
+	implementation 'edu.austral.ingsis.prinstcript:formatter:1.1.4'
+	implementation 'edu.austral.ingsis.prinstcript:linter:1.1.4'
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
