@@ -26,13 +26,13 @@ class SecurityConfig(
         return http
             .authorizeHttpRequests {
                 it/*.anyRequest().permitAll()*/
-                .requestMatchers(GET, "/rules").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(GET, "/snippets").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(POST, "/snippets").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(PUT, "/snippets").hasAuthority("SCOPE_read:snippets")
-                    .requestMatchers(GET, "/user/rules").hasAuthority("SCOPE_read:snippets")
-                    .requestMatchers(POST, "/user/rules").hasAuthority("SCOPE_read:snippets")
-                    .requestMatchers(PUT, "/user/rules").hasAuthority("SCOPE_read:snippets")
+                .requestMatchers(GET, "/rules").authenticated()
+                .requestMatchers(GET, "/snippets").authenticated()
+                .requestMatchers(POST, "/snippets").authenticated()
+                .requestMatchers(PUT, "/snippets").authenticated()
+                .requestMatchers(GET, "/user/rules").authenticated()
+                .requestMatchers(POST, "/user/rules").authenticated()
+                .requestMatchers(PUT, "/user/rules").authenticated()
                 .anyRequest().denyAll()
             }
             .oauth2ResourceServer { it.jwt { jwt -> jwt.decoder(jwtDecoder()) } }
