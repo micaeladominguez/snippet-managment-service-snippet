@@ -14,7 +14,7 @@ class IdExtractor {
 
         private fun extractUserId(jwtToken: Jwt): String {
             val claims: Map<String, Any> = jwtToken.claims
-            return claims["sid"].toString()
+            return claims["sub"].toString()
         }
     }
 }

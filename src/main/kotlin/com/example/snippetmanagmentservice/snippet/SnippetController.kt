@@ -64,34 +64,46 @@ class SnippetController(
     }
 
     @PutMapping("/format/snippet")
-    fun formatSnippetCode(authentication: Authentication,@RequestParam("uuid") uuid: String): ResponseEntity<Snippet> {
-        val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
-        val runner = RunnerCaller()
-        val rules = ruleService.getRules()
-        val userID = getId(authentication)
-        val formattedCode = runner.formatCode(snippetCodeFlow, userRuleService.getFormattedRulesList(userID, rules))
-        val updatedSnippet = snippetService.updateSnippet(UUID.fromString(uuid), formattedCode)
-        return ResponseEntity(updatedSnippet, HttpStatus.OK)
+    fun formatSnippetCode(authentication: Authentication,@RequestParam("uuid") uuid: String): ResponseEntity<Any> {
+        try {
+            val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
+            val runner = RunnerCaller()
+            val rules = ruleService.getRules()
+            val userID = getId(authentication)
+            val formattedCode = runner.formatCode(snippetCodeFlow, userRuleService.getFormattedRulesList(userID, rules))
+            val updatedSnippet = snippetService.updateSnippet(UUID.fromString(uuid), formattedCode)
+            return ResponseEntity(updatedSnippet, HttpStatus.OK)
+        }catch (e: Error){
+            return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PutMapping("/format/code")
     fun formatCode(authentication: Authentication,@RequestBody code: String): ResponseEntity<String> {
-        val codeFlow = stringToFlow(code)
-        val runner = RunnerCaller()
-        val rules = ruleService.getRules()
-        val userID = getId(authentication)
-        val formattedCode = runner.formatCode(codeFlow, userRuleService.getFormattedRulesList(userID, rules))
-        return ResponseEntity(formattedCode, HttpStatus.OK)
+        try {
+            val codeFlow = stringToFlow(code)
+            val runner = RunnerCaller()
+            val rules = ruleService.getRules()
+            val userID = getId(authentication)
+            val formattedCode = runner.formatCode(codeFlow, userRuleService.getFormattedRulesList(userID, rules))
+            return ResponseEntity(formattedCode, HttpStatus.OK)
+        } catch (e: Error){
+            return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PutMapping("/validate")
-    fun checkValidationSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String): ResponseEntity<AnalyzeData> {
-        val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
-        val runner = RunnerCaller()
-        val rules = ruleService.getRules()
-        val userID = getId(authentication)
-        val isValidCode = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
-        return ResponseEntity(isValidCode, HttpStatus.OK)
+    fun checkValidationSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String): ResponseEntity<Any> {
+        try {
+            val snippetCodeFlow = getFlowCodeFromUUID(uuid, snippetService)
+            val runner = RunnerCaller()
+            val rules = ruleService.getRules()
+            val userID = getId(authentication)
+            val isValidCode = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
+            return ResponseEntity(isValidCode, HttpStatus.OK)
+        } catch (e: Error){
+            return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PutMapping("/run")

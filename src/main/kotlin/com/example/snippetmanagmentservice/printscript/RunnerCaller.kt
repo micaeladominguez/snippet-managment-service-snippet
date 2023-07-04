@@ -19,22 +19,34 @@ class RunnerCaller{
     private val runner:PrintscriptRunner = CommonPrintScriptRunner(printer,lastVersion,readInput)
 
     fun formatCode(snippetCodeFlow: Flow<String>, rules: ArrayList<ConfigClasses>): String {
-        return runner.runFormatting(snippetCodeFlow, rules)
+        try {
+            return runner.runFormatting(snippetCodeFlow, rules)
+        } catch (e: Error){
+            throw Error(e.message)
+        }
     }
 
     fun analyzeCode(snippetCodeFlow: Flow<String>, rules: ArrayList<ConfigClassesLinter>): AnalyzeData {
-        val validationString = runner.runAnalyzing(snippetCodeFlow, rules)
-        println(validationString)
-        return if (validationString.isEmpty()){
-            AnalyzeData(true, validationString)
-        }else{
-            AnalyzeData(false, validationString)
+        try {
+            val validationString = runner.runAnalyzing(snippetCodeFlow, rules)
+            println(validationString)
+            return if (validationString.isEmpty()){
+                AnalyzeData(true, validationString)
+            }else{
+                AnalyzeData(false, validationString)
+            }
+        }catch (e: Error){
+            throw Error(e.message)
         }
     }
 
     fun executeCode(snippetCodeFlow: Flow<String>): ArrayList<String>{
-        runner.runExecution(snippetCodeFlow, CommonErrorHandler())
-        return printer.getMessages()
+        try {
+            runner.runExecution(snippetCodeFlow, CommonErrorHandler())
+            return printer.getMessages()
+        }catch (e: Error){
+            throw Error(e.message)
+        }
     }
 
 }
