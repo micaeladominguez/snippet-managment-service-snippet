@@ -11,6 +11,7 @@ class AudienceValidator(private val audience: String) : OAuth2TokenValidator<Jwt
         val error = OAuth2Error("invalid_token", "The required audience is missing", null)
         println("jwt audience : " + jwt.audience )
         println("our audience $audience")
+
         return if (jwt.audience.contains(audience)) {
             OAuth2TokenValidatorResult.success()
         } else {
