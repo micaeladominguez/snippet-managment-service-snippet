@@ -43,6 +43,7 @@ class SecurityConfig(
                 .requestMatchers(PUT, "/user/rules/linted").authenticated()
                 .requestMatchers(POST, "/user/rules").authenticated()
                 .requestMatchers(PUT, "/user/rules").authenticated()
+                .requestMatchers(POST, "/linting").authenticated()
                 .anyRequest().denyAll()
             }
             .oauth2ResourceServer { it.jwt { jwt -> jwt.decoder(jwtDecoder()) } }

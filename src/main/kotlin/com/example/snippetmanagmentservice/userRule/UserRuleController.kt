@@ -1,9 +1,14 @@
 package com.example.snippetmanagmentservice.userRule
 
 import com.example.snippetmanagmentservice.auth.IdExtractor
+import com.example.snippetmanagmentservice.redis.route.StreamTestRoute
 import com.example.snippetmanagmentservice.rule.RuleService
+import com.example.snippetmanagmentservice.snippet.SnippetService
 import com.example.snippetmanagmentservice.userRule.dto.UpdateRules
+import com.example.snippetmanagmentservice.userRule.dto.UpdateRulesAndSnippets
 import com.example.snippetmanagmentservice.userRule.dto.UserRuleGet
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -18,7 +23,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/user/rules")
-class UserRuleController(private val userRuleService: UserRuleService, private val ruleService: RuleService) {
+class UserRuleController(private val userRuleService: UserRuleService, private val ruleService: RuleService, private val snippetService: SnippetService, private val streamRoute : StreamTestRoute) {
 
     @GetMapping()
     fun getRules(@RequestParam("userId") userId: String): ResponseEntity<UserRuleGet> {
@@ -48,8 +53,14 @@ class UserRuleController(private val userRuleService: UserRuleService, private v
     }
 
     @PutMapping("/linted")
-    fun updateLintingRules(authentication: Authentication, @RequestBody rules: UpdateRules): ResponseEntity<List<UserRule>>{
+    suspend fun updateLintingRules(authentication: Authentication, @RequestBody updateRules: UpdateRulesAndSnippets): ResponseEntity<List<UserRule>>{
         val userId =  IdExtractor.getId(authentication)
-        return ResponseEntity(userRuleService.updateLintingRules(userId, rules), HttpStatus.OK)
+        val userID = IdExtractor.getId(authentication)
+        val rulesUpdated = userRuleService.updateLintingRules(userId, updateRules.rules)
+        val rules = ruleService.getRules()
+        val lintingRules = userRuleService.getLintedRulesList(userID, rules)
+        val snippets = snippetService.findSnippets(updateRules.snippetsUuid)
+        GlobalScope.async {streamRoute.updateLinting(snippets, lintingRules)}
+        return ResponseEntity(rulesUpdated, HttpStatus.OK)
     }
 }

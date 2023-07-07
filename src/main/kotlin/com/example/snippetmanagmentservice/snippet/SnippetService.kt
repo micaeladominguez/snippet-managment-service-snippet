@@ -20,6 +20,12 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
         return snippetRepository.save(updatedSnippet)
     }
 
+    fun updateLinting(uuid: UUID, newlinesFailed: String): Snippet {
+        val snippet = snippetRepository.findSnippetById(uuid) ?: throw RuntimeException("Snippet not found")
+        val updatedSnippet = snippet.copy( linesFailed = newlinesFailed)
+        return snippetRepository.save(updatedSnippet)
+    }
+
     fun findSnippet(uuid: UUID): Snippet {
         return snippetRepository.findSnippetById(uuid) ?: throw RuntimeException("Snippet not found")
     }
@@ -32,4 +38,5 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
         val snippet = snippetRepository.findSnippetById(uuid) ?: throw RuntimeException("Snippet not found")
         snippetRepository.delete(snippet)
     }
+
 }
