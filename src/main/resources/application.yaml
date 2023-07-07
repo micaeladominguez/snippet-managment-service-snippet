@@ -1,6 +1,17 @@
 auth0:
   audience: 1E4bHwGjDsGhgkLHcrlk0xemreuSXpnd
 
+redis:
+  host: localhost
+  port: 6379
+
+stream:
+  key: "mystream"
+
+groups:
+  product: "productcreated"
+
+
 spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
