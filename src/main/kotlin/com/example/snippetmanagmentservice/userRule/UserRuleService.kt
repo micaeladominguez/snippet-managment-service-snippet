@@ -2,6 +2,7 @@ package com.example.snippetmanagmentservice.userRule
 
 import com.example.snippetmanagmentservice.rule.Rule
 import com.example.snippetmanagmentservice.rule.TypeOfRule
+import com.example.snippetmanagmentservice.userRule.dto.RuleUpdated
 import com.example.snippetmanagmentservice.userRule.dto.RulesValues
 import com.example.snippetmanagmentservice.userRule.dto.UpdateRules
 import com.example.snippetmanagmentservice.userRule.dto.UserRuleGet
@@ -61,19 +62,19 @@ class UserRuleService(private val userRuleRepository: UserRuleRepository) {
     }
 
     fun updateFormattingRules(userId: String, rules: UpdateRules) : List<UserRule> {
-        updateRules(userId, rules)
+        updateRules(userId, rules.rules)
         return userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.FORMATTER)
     }
 
-    private fun updateRules(userId: String, rules: UpdateRules) {
-        for(rule in rules.rules){
+    private fun updateRules(userId: String, rules: List<RuleUpdated>) {
+        for(rule in rules){
             val createdRule = userRuleRepository.findByUserIdAndRuleId(userId, rule.ruleId)
             if(createdRule != null){
                 userRuleRepository.save(UserRule(createdRule.id, userId, createdRule.rule, rule.value))
             }
         }
     }
-    fun updateLintingRules(userId: String, rules: UpdateRules) : List<UserRule> {
+    fun updateLintingRules(userId: String, rules: List<RuleUpdated>) : List<UserRule> {
         updateRules(userId, rules)
         return userRuleRepository.findByUserIdAndRuleType(userId, TypeOfRule.LINTER)
     }

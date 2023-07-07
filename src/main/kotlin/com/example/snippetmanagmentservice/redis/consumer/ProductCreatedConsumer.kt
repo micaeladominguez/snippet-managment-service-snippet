@@ -1,6 +1,7 @@
 package com.example.snippetmanagmentservice.redis.consumer
 
 import com.example.snippetmanagmentservice.redis.RedisStreamConsumer
+import com.example.snippetmanagmentservice.snippet.SnippetService
 import interpreterUtils.ReadInput
 import interpreterUtils.ReadInputImpl
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +19,8 @@ import java.time.Duration
 class ProductCreatedConsumer @Autowired constructor(
     redis: ReactiveRedisTemplate<String, String>,
     @Value("\${stream.key}") streamKey: String,
-    @Value("\${groups.product}") groupId: String
+    @Value("\${groups.product}") groupId: String,
+    val snippetService: SnippetService
 ) : RedisStreamConsumer<ProductCreated>(streamKey, groupId, redis) {
 
     override fun options(): StreamReceiver.StreamReceiverOptions<String, ObjectRecord<String, ProductCreated>> {
@@ -30,12 +32,13 @@ class ProductCreatedConsumer @Autowired constructor(
 
     override fun onMessage(record: ObjectRecord<String, ProductCreated>) {
         println("Id: ${record.id}, Snippet: ${record.stream} Group: ${groupId}")
-        val snippetCodeFlow = stringToFlow(record.value.snippet)
+        val snippetCodeFlow = stringToFlow(record.value.snippet.code)
         val printer = PrinterCollector()
         val readInput: ReadInput = ReadInputImpl()
         val lastVersion = getLatestVersion()
         val runner: PrintscriptRunner = CommonPrintScriptRunner(printer,lastVersion,readInput)
         val analyzed = runner.runAnalyzing(snippetCodeFlow, record.value.rules)
+        snippetService.updateLinting(record.value.snippet.id, analyzed)
         println("CODE ANALYZED $analyzed")
     }
 

@@ -9,3 +9,8 @@ data class RuleUpdated(
 data class UpdateRules(
     val rules: List<RuleUpdated>
 )
+
+data class UpdateRulesAndSnippets(
+    val rules : List<RuleUpdated>,
+    val snippetsUuid : List<UUID>
+)

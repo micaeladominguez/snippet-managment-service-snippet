@@ -2,6 +2,7 @@ package com.example.snippetmanagmentservice.redis.producer
 
 import com.example.snippetmanagmentservice.redis.RedisStreamProducer
 import com.example.snippetmanagmentservice.redis.consumer.ProductCreated
+import com.example.snippetmanagmentservice.snippet.Snippet
 import kotlinx.coroutines.reactor.awaitSingle
 import configurationLinter.ConfigClassesLinter
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +16,7 @@ class ProductCreatedProducer @Autowired constructor(
     redis: ReactiveRedisTemplate<String, String>
 ) : RedisStreamProducer(streamKey, redis) {
 
-    suspend fun publishEvent(snippet: String, rules: ArrayList<ConfigClassesLinter> ) {
+    suspend fun publishEvent(snippet: Snippet, rules: ArrayList<ConfigClassesLinter> ) {
         println("Publishing on stream: $streamKey")
         val product = ProductCreated(snippet, rules)
         emit(product).awaitSingle()
