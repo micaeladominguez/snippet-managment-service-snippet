@@ -16,7 +16,10 @@ data class Snippet(
     val type: String,
 
     @Column(name = "code")
-    val code: String
+    val code: String,
+
+    @Column(name = "linesFailed")
+    val linesFailed: String
 ){
-    constructor(): this(UUID.randomUUID(), "", "", "")
+    constructor(): this(UUID.randomUUID(), "", "", "", "")
 }

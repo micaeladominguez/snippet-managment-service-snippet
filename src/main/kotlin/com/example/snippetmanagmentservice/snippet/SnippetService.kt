@@ -10,13 +10,13 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
     fun allSnippets(): List<Snippet> {
         return snippetRepository.findAll().toList()
     }
-    fun saveSnippet(snippet: SnippetPostDTO): Snippet {
-        return snippetRepository.save(Snippet(UUID.randomUUID(), snippet.name, snippet.type, snippet.code))
+    fun saveSnippet(snippet: SnippetPostDTO, linesFailed: String): Snippet {
+        return snippetRepository.save(Snippet(UUID.randomUUID(), snippet.name, snippet.type, snippet.code, linesFailed))
     }
 
-    fun updateSnippet(uuid: UUID, newCode: String): Snippet {
+    fun updateSnippet(uuid: UUID, newCode: String, newlinesFailed: String): Snippet {
         val snippet = snippetRepository.findSnippetById(uuid) ?: throw RuntimeException("Snippet not found")
-        val updatedSnippet = snippet.copy(code = newCode)
+        val updatedSnippet = snippet.copy(code = newCode, linesFailed = newlinesFailed)
         return snippetRepository.save(updatedSnippet)
     }
 
