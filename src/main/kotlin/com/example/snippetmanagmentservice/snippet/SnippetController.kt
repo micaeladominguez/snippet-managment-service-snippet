@@ -22,20 +22,32 @@ class SnippetController(
 ) {
 
     @PostMapping("/create")
-    fun createSnippet(@RequestBody snippet: SnippetPostDTO): ResponseEntity<Snippet> {
-        val createdSnippet = snippetService.saveSnippet(snippet)
+    fun createSnippet(authentication: Authentication,@RequestBody snippet: SnippetPostDTO): ResponseEntity<Snippet> {
+        var snippet = SnippetPostDTO(snippet.name,snippet.type,snippet.code);
+        val runner = RunnerCaller()
+        val rules = ruleService.getRules()
+        val userID = getId(authentication)
+        val isValidCode = runner.analyzeCode(stringToFlow(snippet.code), userRuleService.getLintedRulesList(userID, rules))
+        var createdSnippet = snippetService.saveSnippet(snippet,isValidCode.linesErrors)
         return ResponseEntity(createdSnippet, HttpStatus.CREATED)
     }
 
     @PutMapping("/update/snippet")
-    fun updateSnippet(@RequestParam("uuid") uuid: String, @RequestBody newCode: String): ResponseEntity<Snippet> {
-        val snippetUUID = UUID.fromString(uuid)
-        // Verificar que el código no esté vacío
-        if (newCode.isEmpty()) {
-            return ResponseEntity(HttpStatus.BAD_REQUEST)
+    fun updateSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String, @RequestBody newCode: String): ResponseEntity<Any> {
+        try{
+            val snippetUUID = UUID.fromString(uuid)
+            if (newCode.isEmpty()) {
+                return ResponseEntity(HttpStatus.BAD_REQUEST)
+            }
+            val runner = RunnerCaller()
+            val rules = ruleService.getRules()
+            val userID = getId(authentication)
+            val isValidCode = runner.analyzeCode(getFlowCodeFromUUID(uuid, snippetService), userRuleService.getLintedRulesList(userID, rules))
+            val updatedSnippet = snippetService.updateSnippet(snippetUUID, newCode, isValidCode.linesErrors)
+            return ResponseEntity(updatedSnippet, HttpStatus.OK)
+        }catch (e: Exception){
+            return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
         }
-        val updatedSnippet = snippetService.updateSnippet(snippetUUID, newCode)
-        return ResponseEntity(updatedSnippet, HttpStatus.OK)
     }
 
     @GetMapping("/")
@@ -71,7 +83,8 @@ class SnippetController(
             val rules = ruleService.getRules()
             val userID = getId(authentication)
             val formattedCode = runner.formatCode(snippetCodeFlow, userRuleService.getFormattedRulesList(userID, rules))
-            val updatedSnippet = snippetService.updateSnippet(UUID.fromString(uuid), formattedCode)
+            val snippet = snippetService.findSnippet(UUID.fromString(uuid))
+            val updatedSnippet = snippetService.updateSnippet(UUID.fromString(uuid), formattedCode, snippet.linesFailed)
             return ResponseEntity(updatedSnippet, HttpStatus.OK)
         }catch (e: Exception){
             return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
@@ -99,7 +112,9 @@ class SnippetController(
             val runner = RunnerCaller()
             val rules = ruleService.getRules()
             val userID = getId(authentication)
+            val snippet = snippetService.findSnippet(UUID.fromString(uuid))
             val isValidCode = runner.analyzeCode(snippetCodeFlow, userRuleService.getLintedRulesList(userID, rules))
+            snippetService.updateSnippet(UUID.fromString(uuid), snippet.code, isValidCode.linesErrors)
             return ResponseEntity(isValidCode, HttpStatus.OK)
         } catch (e: Exception){
             return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
