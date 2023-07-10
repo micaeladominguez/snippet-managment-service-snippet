@@ -22,14 +22,18 @@ class SnippetController(
 ) {
 
     @PostMapping("/create")
-    fun createSnippet(authentication: Authentication,@RequestBody snippet: SnippetPostDTO): ResponseEntity<Snippet> {
-        var snippet = SnippetPostDTO(snippet.name,snippet.type,snippet.code);
-        val runner = RunnerCaller()
-        val rules = ruleService.getRules()
-        val userID = getId(authentication)
-        val isValidCode = runner.analyzeCode(stringToFlow(snippet.code), userRuleService.getLintedRulesList(userID, rules))
-        var createdSnippet = snippetService.saveSnippet(snippet,isValidCode.linesErrors)
-        return ResponseEntity(createdSnippet, HttpStatus.CREATED)
+    fun createSnippet(authentication: Authentication,@RequestBody snippet: SnippetPostDTO): ResponseEntity<Any> {
+        try {
+            var snippet = SnippetPostDTO(snippet.name,snippet.type,snippet.code);
+            val runner = RunnerCaller()
+            val rules = ruleService.getRules()
+            val userID = getId(authentication)
+            val isValidCode = runner.analyzeCode(stringToFlow(snippet.code), userRuleService.getLintedRulesList(userID, rules))
+            var createdSnippet = snippetService.saveSnippet(snippet,isValidCode.linesErrors)
+            return ResponseEntity(createdSnippet, HttpStatus.CREATED)
+        }catch (e: Exception){
+            return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PutMapping("/update/snippet")
