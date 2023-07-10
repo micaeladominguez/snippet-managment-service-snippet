@@ -2,7 +2,7 @@ auth0:
   audience: 1E4bHwGjDsGhgkLHcrlk0xemreuSXpnd
 
 redis:
-  host: localhost
+  host: ${REDIS_HOST}
   port: 6379
 
 stream:
