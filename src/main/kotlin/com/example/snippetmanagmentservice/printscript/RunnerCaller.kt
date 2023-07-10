@@ -1,6 +1,5 @@
 package com.example.snippetmanagmentservice.printscript
 
-import CommonErrorHandler
 import com.example.snippetmanagmentservice.snippet.utils.AnalyzeData
 import configuration.ConfigClasses
 import configurationLinter.ConfigClassesLinter
@@ -9,6 +8,7 @@ import interpreterUtils.ReadInputImpl
 import kotlinx.coroutines.flow.Flow
 import printscript.CommonPrintScriptRunner
 import printscript.PrintscriptRunner
+import util.CommonErrorHandler
 import version.getLatestVersion
 
 class RunnerCaller{
