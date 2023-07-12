@@ -4,7 +4,6 @@ import com.example.snippetmanagmentservice.auth.IdExtractor.Companion.getId
 import com.example.snippetmanagmentservice.printscript.RunnerCaller
 import com.example.snippetmanagmentservice.rule.RuleService
 import com.example.snippetmanagmentservice.snippet.dto.SnippetPostDTO
-import com.example.snippetmanagmentservice.snippet.dto.UpdateSnippetDTO
 import com.example.snippetmanagmentservice.snippet.utils.*
 import com.example.snippetmanagmentservice.userRule.UserRuleService
 import org.springframework.http.HttpStatus
@@ -38,17 +37,17 @@ class SnippetController(
     }
 
     @PutMapping("/update/snippet")
-    fun updateSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String, @RequestBody newCode: UpdateSnippetDTO): ResponseEntity<Any> {
+    fun updateSnippet(authentication: Authentication, @RequestParam("uuid") uuid: String, @RequestBody newCode: String): ResponseEntity<Any> {
         try{
             val snippetUUID = UUID.fromString(uuid)
-            if (newCode.code.isEmpty()) {
+            if (newCode.isEmpty()) {
                 return ResponseEntity(HttpStatus.BAD_REQUEST)
             }
             val runner = RunnerCaller()
             val rules = ruleService.getRules()
             val userID = getId(authentication)
             val isValidCode = runner.analyzeCode(getFlowCodeFromUUID(uuid, snippetService), userRuleService.getLintedRulesList(userID, rules))
-            val updatedSnippet = snippetService.updateSnippet(snippetUUID, newCode.code, isValidCode.linesErrors)
+            val updatedSnippet = snippetService.updateSnippet(snippetUUID, newCode, isValidCode.linesErrors)
             return ResponseEntity(updatedSnippet, HttpStatus.OK)
         }catch (e: Exception){
             return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
