@@ -55,21 +55,29 @@ class SnippetController(
     }
 
     @GetMapping("/")
-    fun getSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Snippet> {
-        val snippetUUID = UUID.fromString(uuid)
-        val snippet = snippetService.findSnippet(snippetUUID)
-        return ResponseEntity(snippet, HttpStatus.OK)
+    fun getSnippet(@RequestParam("uuid") uuid: String): ResponseEntity<Any> {
+        try {
+            val snippetUUID = UUID.fromString(uuid)
+            val snippet = snippetService.findSnippet(snippetUUID)
+            return ResponseEntity(snippet, HttpStatus.OK)
+        }catch (e: Exception){
+            return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
+        }
     }
 
     @GetMapping
-    fun getSnippets(authentication: Authentication, @RequestParam("uuids") uuids: List<UUID>): ResponseEntity<List<AnalyzedSnippet>> {
-        val snippets = snippetService.findSnippets(uuids)
-        val analyzedSnippets = ArrayList<AnalyzedSnippet>()
-        for (snippet in snippets){
-            val data = getAnalyzeDataFromSnippet(snippet.id,snippetService,ruleService,userRuleService,authentication)
-            analyzedSnippets.add(AnalyzedSnippet(snippet,data))
+    fun getSnippets(authentication: Authentication, @RequestParam("uuids") uuids: List<UUID>): ResponseEntity<Any> {
+        try{
+            val snippets = snippetService.findSnippets(uuids)
+            val analyzedSnippets = ArrayList<AnalyzedSnippet>()
+            for (snippet in snippets){
+                val data = getAnalyzeDataFromSnippet(snippet.id,snippetService,ruleService,userRuleService,authentication)
+                analyzedSnippets.add(AnalyzedSnippet(snippet,data))
+            }
+            return ResponseEntity(analyzedSnippets, HttpStatus.OK)
+        }catch (e: Exception){
+            return ResponseEntity(e.message,HttpStatus.BAD_REQUEST)
         }
-        return ResponseEntity(analyzedSnippets, HttpStatus.OK)
     }
 
     @DeleteMapping()
