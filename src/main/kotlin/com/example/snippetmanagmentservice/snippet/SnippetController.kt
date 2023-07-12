@@ -71,8 +71,7 @@ class SnippetController(
             val snippets = snippetService.findSnippets(uuids)
             val analyzedSnippets = ArrayList<AnalyzedSnippet>()
             for (snippet in snippets){
-                val data = getAnalyzeDataFromSnippet(snippet.id,snippetService,ruleService,userRuleService,authentication)
-                analyzedSnippets.add(AnalyzedSnippet(snippet,data))
+                analyzedSnippets.add(AnalyzedSnippet(snippet,AnalyzeData(snippet.linesFailed == "", snippet.linesFailed)))
             }
             return ResponseEntity(analyzedSnippets, HttpStatus.OK)
         }catch (e: Exception){
